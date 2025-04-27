@@ -1,49 +1,52 @@
 <html>
-    <head>
-        <title>AR-quide</title>
-        <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <a-scene 
-    embedded 
-    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: true;"
-    renderer="logarithmicDepthBuffer: true;"
-    vr-mode-ui="enabled: false"> <!-- Добавлен режим отладки -->
-            <a-marker 
-                type="pattern" 
-                url="assets/markers/object3-pattern.patt"
-                raycaster="objects: .clickable"
-    emitevents="true"
-    cursor="rayOrigin: mouse">
-                
-                <a-image src="assets/images/old-photo1.jpg" width="1" height="0.6"></a-image>
-                <a-text value="Дом купца" color="#000" position="0 -0.5 0"></a-text>
-            </a-marker>
-            
-            <a-entity camera="near: 0.01; far: 10000; fov: 80;"></a-entity>
-        </a-scene>
-        <div class="ar-info" id="info1">
-            <h3>История дома</h3>
-            <p>Построен тогда-то</p>
-        </div>
-        <script>
-            document.querySelector('a-marker').addEventListener('markerFound', () =>{
-                document.getElementById('info1').style.display = 'block';
-            } );
-        </script>
-        <script>
-            // Проверка поддержки AR
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('AR не поддерживается в вашем браузере');
-            }
+<head>
+    <title>AR-guide</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a-scene embedded arjs="debugUIEnabled: true">
+        <!-- Тестовый маркер -->
+        <a-marker preset="hiro">
+            <a-box color="red" position="0 0.5 0" scale="0.5 0.5 0.5"></a-box>
+        </a-marker>
         
-            // Логирование событий
-            const scene = document.querySelector('a-scene');
-            scene.addEventListener('arjs-video-loaded', () => console.log('Камера запущена'));
-            scene.addEventListener('markerFound', (e) => console.log('Найден маркер:', e.target));
-            scene.addEventListener('markerLost', (e) => console.log('Потерян маркер:', e.target));
-        </script>
-    </body>
-    </html>
+        <!-- Ваш маркер -->
+        <a-marker type="pattern" url="assets/markers/object3-pattern.patt">
+            <a-image src="assets/images/old-photo1.jpg" width="1" height="0.6"></a-image>
+            <a-text value="Дом купца" color="#000" position="0 -0.5 0"></a-text>
+        </a-marker>
+        
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <div class="ar-info" id="info1">
+        <h3>История дома</h3>
+        <p>Построен тогда-то</p>
+    </div>
+
+    <script>
+        // Проверка поддержки AR
+        if (!navigator.mediaDevices?.getUserMedia) {
+            alert('AR не поддерживается в вашем браузере');
+        }
+
+        const scene = document.querySelector('a-scene');
+        
+        scene.addEventListener('arjs-video-loaded', () => {
+            console.log('Камера запущена!');
+        });
+
+        document.querySelectorAll('a-marker').forEach(marker => {
+            marker.addEventListener('markerFound', () => {
+                console.log('Маркер найден');
+                document.getElementById('info1').style.display = 'block';
+            });
+            marker.addEventListener('markerLost', () => {
+                document.getElementById('info1').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
